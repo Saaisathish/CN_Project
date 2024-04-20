@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, redirect, render_template, request, url_for
 from flask_socketio import SocketIO, emit
 import joblib
 import pandas as pd
@@ -9,7 +9,7 @@ import socket
 import threading
 import json
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
 socketio = SocketIO(app)
 
 # Load the saved model
@@ -23,8 +23,25 @@ key_string = base64.b64encode(key).decode('utf-8')
 
 # Define a route to render the input form
 @app.route('/')
-def index():
+def login():
+    return render_template('Login.html')
+
+@app.route('/index.html', methods=['GET'])
+def index_page():
     return render_template('index.html')
+
+
+@app.route('/', methods=['POST'])
+def process_login():    
+    username = request.form['username']
+    password = request.form['password']    
+    if username == 'demo' and password == 'demo':        
+        return redirect(url_for('index_page'))
+    else:    
+        return redirect(url_for('login'))
+
+
+    
 
 # Define a TCP server to receive transaction data
 def tcp_server():

@@ -1,100 +1,346 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Predict Fraud</title>
-    <!-- Include CryptoJS library -->
-    <script src=https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js></script>
+    <title>Banker &mdash; Website Template by Colorlib</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">    
+    
+    <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,700" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/icomoon/style.css')}}">
 
-    <!-- Include Socket.IO library -->
-    <script
-      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"
-      integrity="sha384-q1jVtuW3qybIzF0jrNNT1LnLLn4hj7S8Sq9SV42P3dKiUcSBhGT+31Bp3GtkVGID"
-      crossorigin="anonymous"
-    ></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery-ui.css' )}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.carousel.min.css' )}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.theme.default.min.css' )}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/owl.theme.default.min.css' )}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/jquery.fancybox.min.css' )}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap-datepicker.css' )}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='fonts/flaticon/font/flaticon.css' )}}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/aos.css' )}}"> 
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css')}}">
+    
   </head>
-  <body>
-    <h1>Predict Fraud</h1>
-    <form id="transactionForm" action="">
-      <label for="amount">Amount:</label><br />
-      <input type="text" id="amount" name="amount" /><br />
-      <label for="oldbalanceOrg">Old Balance Origin:</label><br />
-      <input type="text" id="oldbalanceOrg" name="oldbalanceOrg" /><br />
-      <label for="newbalanceOrig">New Balance Origin:</label><br />
-      <input type="text" id="newbalanceOrig" name="newbalanceOrig" /><br />
-      <label for="oldbalanceDest">Old Balance Destination:</label><br />
-      <input type="text" id="oldbalanceDest" name="oldbalanceDest" /><br />
-      <label for="newbalanceDest">New Balance Destination:</label><br />
-      <input type="text" id="newbalanceDest" name="newbalanceDest" /><br />
-      <label for="isFlaggedFraud">Is Flagged Fraud:</label><br />
-      <input
-        type="text"
-        id="isFlaggedFraud"
-        name="isFlaggedFraud"
-      /><br /><br />
-      <input type="submit" value="Submit" />
-    </form>
+  <body data-spy="scroll" data-target=".site-navbar-target" data-offset="300">
+  
 
-    <div id="predictionResult"></div>
+  <div id="overlayer"></div>
+  <div class="loader">
+    <div class="spinner-border text-primary" role="status">
+      <span class="sr-only">Loading...</span>
+    </div>
+  </div>
 
-    <script>
-      // Ensure that Socket.IO library is loaded before using it
-      // This script tag includes the Socket.IO library
-      var socket = io.connect(
-        "http://" + document.domain + ":" + location.port
-      );
 
-      // Listen for the form submission event
-      document
-        .getElementById("transactionForm")
-        .addEventListener("submit", function (event) {
-          event.preventDefault();
+  <div class="site-wrap">
 
-          // Get the form data
-          var formData = {
-            amount: document.getElementById("amount").value,
-            oldbalanceOrg: document.getElementById("oldbalanceOrg").value,
-            newbalanceOrig: document.getElementById("newbalanceOrig").value,
-            oldbalanceDest: document.getElementById("oldbalanceDest").value,
-            newbalanceDest: document.getElementById("newbalanceDest").value,
-            isFlaggedFraud: document.getElementById("isFlaggedFraud").value,
-          };
-          console.log("Data received");
-          // Encrypt the form data
-          var encryptedData = {
-            amount: CryptoJS.AES.encrypt(formData.amount, "secret").toString(),
-            oldbalanceOrg: CryptoJS.AES.encrypt(
-              formData.oldbalanceOrg,
-              "secret"
-            ).toString(),
-            newbalanceOrig: CryptoJS.AES.encrypt(
-              formData.newbalanceOrig,
-              "secret"
-            ).toString(),
-            oldbalanceDest: CryptoJS.AES.encrypt(
-              formData.oldbalanceDest,
-              "secret"
-            ).toString(),
-            newbalanceDest: CryptoJS.AES.encrypt(
-              formData.newbalanceDest,
-              "secret"
-            ).toString(),
-            isFlaggedFraud: CryptoJS.AES.encrypt(
-              formData.isFlaggedFraud,
-              "secret"
-            ).toString(),
-          };
+    <div class="site-mobile-menu site-navbar-target">
+      <div class="site-mobile-menu-header">
+        <div class="site-mobile-menu-close mt-3">
+          <span class="icon-close2 js-menu-toggle"></span>
+        </div>
+      </div>
+      <div class="site-mobile-menu-body"></div>
+    </div>
+   
+    
+    <header class="site-navbar js-sticky-header site-navbar-target" role="banner">
 
-          // Send the encrypted form data to the server via Socket.IO
-          socket.emit("transaction_data", encryptedData);
-        });
+      <div class="container">
+        <div class="row align-items-center">
+          
+          <div class="col-6 col-xl-2">
+            <h1 class="mb-0 site-logo"><a href="index.html" class="h2 mb-0">YourBank<span class="text-primary">.</span> </a></h1>
+          </div>
 
-      // Listen for the prediction result from the server
-      socket.on("prediction_result", function (data) {
-        var predictionResultDiv = document.getElementById("predictionResult");
-        predictionResultDiv.innerHTML = "<p>" + data.prediction + "</p>";
+          <div class="col-12 col-md-10 d-none d-xl-block">
+            <nav class="site-navigation position-relative text-right" role="navigation">
+
+              <ul class="site-menu main-menu js-clone-nav mr-auto d-none d-lg-block">
+                <li><a href="#home-section" class="nav-link">Home</a></li>
+                <li><a href="#contact-section" class="nav-link">Contact</a></li>
+                <li class="social"><a href="#contact-section" class="nav-link"><span class="icon-facebook"></span></a></li>
+                <li class="social"><a href="#contact-section" class="nav-link"><span class="icon-twitter"></span></a></li>
+                <li class="social"><a href="#contact-section" class="nav-link"><span class="icon-linkedin"></span></a></li>
+              </ul>
+            </nav>
+          </div>
+
+
+          <div class="col-6 d-inline-block d-xl-none ml-md-0 py-3" style="position: relative; top: 3px;"><a href="#" class="site-menu-toggle js-menu-toggle float-right"><span class="icon-menu h3"></span></a></div>
+
+        </div>
+      </div>
+      
+    </header>
+
+  
+     
+    <div class="site-blocks-cover overlay" style="background-image: url(/static/images/hero_2.jpg);" data-aos="fade" id="home-section">
+
+      <div class="container">
+        <div class="row align-items-center justify-content-center">
+          <div class="container">
+            <div class="row mb-5">
+              <div class="col-12 text-center" data-aos="fade-up">
+                <h2 class="section-title mb-3">Payment</h2>
+              </div>
+            </div>
+            <div class="row mb-5">  
+              <div class="col-md-6 mb-4 mb-lg-0 col-lg-4 pricing-popular" data-aos="fade-up" data-aos-delay="100">
+                <div class="pricing">
+                  <h3 class="text-center text-black">PREDICT FRAUD</h3>
+                  <form id="transactionForm" action="">
+                    <label for="amount">Amount:</label><br />
+                    <input type="text" id="amount" name="amount" /><br />
+                    <label for="oldbalanceOrg">Old Balance Origin:</label><br />
+                    <input type="text" id="oldbalanceOrg" name="oldbalanceOrg" /><br />
+                    <label for="newbalanceOrig">New Balance Origin:</label><br />
+                    <input type="text" id="newbalanceOrig" name="newbalanceOrig" /><br />
+                    <label for="oldbalanceDest">Old Balance Destination:</label><br />
+                    <input type="text" id="oldbalanceDest" name="oldbalanceDest" /><br />
+                    <label for="newbalanceDest">New Balance Destination:</label><br />
+                    <input type="text" id="newbalanceDest" name="newbalanceDest" /><br />
+                    <label for="isFlaggedFraud">Is Flagged Fraud:</label><br />
+                    <input
+                      type="text"
+                      id="isFlaggedFraud"
+                      name="isFlaggedFraud"
+                    /><br /><br />
+                    <input type="submit" class="btn btn-primary" value="Submit" />
+                  </form> 
+                  
+                  <div id="predictionResult"></div>
+                </div>
+              </div>
+            </div>     
+          </div>
+        </div>
+      </div>
+      <a href="#next" class="mouse smoothscroll">
+        <span class="mouse-icon">
+          <span class="mouse-wheel"></span>
+        </span>
+      </a>
+    </div>  
+
+    
+
+    <section class="site-section bg-light" id="contact-section" data-aos="fade">
+      <div class="container">
+        <div class="row mb-5">
+          <div class="col-12 text-center">
+            <h2 class="section-title mb-3">Contact Us</h2>
+          </div>
+        </div>
+        <div class="row mb-5">
+          
+
+
+          <div class="col-md-4 text-center">
+            <p class="mb-4">
+              <span class="icon-room d-block h2 text-primary"></span>
+              <span>203 Fake St. Mountain View, San Francisco, California, USA</span>
+            </p>
+          </div>
+          <div class="col-md-4 text-center">
+            <p class="mb-4">
+              <span class="icon-phone d-block h2 text-primary"></span>
+              <a href="#">+1 232 3235 324</a>
+            </p>
+          </div>
+          <div class="col-md-4 text-center">
+            <p class="mb-0">
+              <span class="icon-mail_outline d-block h2 text-primary"></span>
+              <a href="#">youremail@domain.com</a>
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12 mb-5">
+
+            
+
+            <form action="#" class="p-5 bg-white">
+              
+              <h2 class="h4 text-black mb-5">Contact Form</h2> 
+
+              <div class="row form-group">
+                <div class="col-md-6 mb-3 mb-md-0">
+                  <label class="text-black" for="fname">First Name</label>
+                  <input type="text" id="fname" class="form-control">
+                </div>
+                <div class="col-md-6">
+                  <label class="text-black" for="lname">Last Name</label>
+                  <input type="text" id="lname" class="form-control">
+                </div>
+              </div>
+
+              <div class="row form-group">
+                
+                <div class="col-md-12">
+                  <label class="text-black" for="email">Email</label> 
+                  <input type="email" id="email" class="form-control">
+                </div>
+              </div>
+
+              <div class="row form-group">
+                
+                <div class="col-md-12">
+                  <label class="text-black" for="subject">Subject</label> 
+                  <input type="subject" id="subject" class="form-control">
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-md-12">
+                  <label class="text-black" for="message">Message</label> 
+                  <textarea name="message" id="message" cols="30" rows="7" class="form-control" placeholder="Write your notes or questions here..."></textarea>
+                </div>
+              </div>
+
+              <div class="row form-group">
+                <div class="col-md-12">
+                  <input type="submit" value="Send Message" class="btn btn-primary btn-md text-white">
+                </div>
+              </div>
+
+  
+            </form>
+          </div>
+          
+        </div>
+      </div>
+    </section>
+
+    
+    <footer class="site-footer">
+      <div class="container">
+        <div class="row">
+          <div class="col-md-9">
+            <div class="row">
+              <div class="col-md-5">
+                <h2 class="footer-heading mb-4">About Us</h2>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Neque facere laudantium magnam voluptatum autem. Amet aliquid nesciunt veritatis aliquam.</p>
+              </div>
+              <div class="col-md-3 ml-auto">
+                <h2 class="footer-heading mb-4">Quick Links</h2>
+                <ul class="list-unstyled">
+                  <li><a href="#about-section" class="smoothscroll">Terms</a></li>
+                  <li><a href="#about-section" class="smoothscroll">Policy</a></li>
+                  <li><a href="#about-section" class="smoothscroll">About Us</a></li>
+                  <li><a href="#services-section" class="smoothscroll">Services</a></li>
+                  <li><a href="#testimonials-section" class="smoothscroll">Testimonials</a></li>
+                  <li><a href="#contact-section" class="smoothscroll">Contact Us</a></li>
+                </ul>
+              </div>
+              <div class="col-md-3 footer-social">
+                <h2 class="footer-heading mb-4">Follow Us</h2>
+                <a href="#" class="pl-0 pr-3"><span class="icon-facebook"></span></a>
+                <a href="#" class="pl-3 pr-3"><span class="icon-twitter"></span></a>
+                <a href="#" class="pl-3 pr-3"><span class="icon-instagram"></span></a>
+                <a href="#" class="pl-3 pr-3"><span class="icon-linkedin"></span></a>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-3">
+            <h2 class="footer-heading mb-4">Subscribe Newsletter</h2>
+            <form action="#" method="post" class="footer-subscribe">
+              <div class="input-group mb-3">
+                <input type="text" class="form-control border-secondary text-white bg-transparent" placeholder="Enter Email" aria-label="Enter Email" aria-describedby="button-addon2">
+                <div class="input-group-append">
+                  <button class="btn btn-primary text-black" type="button" id="button-addon2">Send</button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+        <div class="row pt-5 mt-5 text-center">
+          <div class="col-md-12">
+            <div class="border-top pt-5">
+              <p class="copyright"><small>
+              <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+            Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart text-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank" >Colorlib</a>
+            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. --></small></p>
+        
+            </div>
+          </div>
+          
+        </div>
+      </div>
+    </footer>
+
+  </div> <!-- .site-wrap -->
+
+  <script src="/static/js/jquery-3.3.1.min.js"></script>
+  <script src="/static/js/jquery-ui.js"></script>
+  <script src="/static/js/popper.min.js"></script>
+  <script src="/static/js/bootstrap.min.js"></script>
+  <script src="/static/js/owl.carousel.min.js"></script>
+  <script src="/static/js/jquery.countdown.min.js"></script>
+  <script src="/static/js/jquery.easing.1.3.js"></script>
+  <script src="/static/js/aos.js"></script>
+  <script src="/static/js/jquery.fancybox.min.js"></script>
+  <script src="/static/js/jquery.sticky.js"></script>
+  <script src="/static/js/isotope.pkgd.min.js"></script>  
+  <script src="/static/js/main.js"></script>
+
+  <script>
+    // Ensure that Socket.IO library is loaded before using it
+    // This script tag includes the Socket.IO library
+    var socket = io.connect(
+      "http://" + document.domain + ":" + location.port
+    );
+
+    // Listen for the form submission event
+    document
+      .getElementById("transactionForm")
+      .addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        // Get the form data
+        var formData = {
+          amount: document.getElementById("amount").value,
+          oldbalanceOrg: document.getElementById("oldbalanceOrg").value,
+          newbalanceOrig: document.getElementById("newbalanceOrig").value,
+          oldbalanceDest: document.getElementById("oldbalanceDest").value,
+          newbalanceDest: document.getElementById("newbalanceDest").value,
+          isFlaggedFraud: document.getElementById("isFlaggedFraud").value,
+        };
+        console.log("Data received");
+        // Encrypt the form data
+        var encryptedData = {
+          amount: CryptoJS.AES.encrypt(formData.amount, "secret").toString(),
+          oldbalanceOrg: CryptoJS.AES.encrypt(
+            formData.oldbalanceOrg,
+            "secret"
+          ).toString(),
+          newbalanceOrig: CryptoJS.AES.encrypt(
+            formData.newbalanceOrig,
+            "secret"
+          ).toString(),
+          oldbalanceDest: CryptoJS.AES.encrypt(
+            formData.oldbalanceDest,
+            "secret"
+          ).toString(),
+          newbalanceDest: CryptoJS.AES.encrypt(
+            formData.newbalanceDest,
+            "secret"
+          ).toString(),
+          isFlaggedFraud: CryptoJS.AES.encrypt(
+            formData.isFlaggedFraud,
+            "secret"
+          ).toString(),
+        };
+
+        // Send the encrypted form data to the server via Socket.IO
+        socket.emit("transaction_data", encryptedData);
       });
-    </script>
+
+    // Listen for the prediction result from the server
+    socket.on("prediction_result", function (data) {
+      var predictionResultDiv = document.getElementById("predictionResult");
+      predictionResultDiv.innerHTML = "<p>" + data.prediction + "</p>";
+    });
+  </script>
   </body>
 </html>
