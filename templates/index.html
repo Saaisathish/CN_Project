@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Predict Fraud</title>
+    <!-- Include CryptoJS library -->
+    <script src=https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js></script>
+
+    <!-- Include Socket.IO library -->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.3.1/socket.io.js"
+      integrity="sha384-q1jVtuW3qybIzF0jrNNT1LnLLn4hj7S8Sq9SV42P3dKiUcSBhGT+31Bp3GtkVGID"
+      crossorigin="anonymous"
+    ></script>
+  </head>
+  <body>
+    <h1>Predict Fraud</h1>
+    <form id="transactionForm" action="">
+      <label for="amount">Amount:</label><br />
+      <input type="text" id="amount" name="amount" /><br />
+      <label for="oldbalanceOrg">Old Balance Origin:</label><br />
+      <input type="text" id="oldbalanceOrg" name="oldbalanceOrg" /><br />
+      <label for="newbalanceOrig">New Balance Origin:</label><br />
+      <input type="text" id="newbalanceOrig" name="newbalanceOrig" /><br />
+      <label for="oldbalanceDest">Old Balance Destination:</label><br />
+      <input type="text" id="oldbalanceDest" name="oldbalanceDest" /><br />
+      <label for="newbalanceDest">New Balance Destination:</label><br />
+      <input type="text" id="newbalanceDest" name="newbalanceDest" /><br />
+      <label for="isFlaggedFraud">Is Flagged Fraud:</label><br />
+      <input
+        type="text"
+        id="isFlaggedFraud"
+        name="isFlaggedFraud"
+      /><br /><br />
+      <input type="submit" value="Submit" />
+    </form>
+
+    <div id="predictionResult"></div>
+
+    <script>
+      // Ensure that Socket.IO library is loaded before using it
+      // This script tag includes the Socket.IO library
+      var socket = io.connect(
+        "http://" + document.domain + ":" + location.port
+      );
+
+      // Listen for the form submission event
+      document
+        .getElementById("transactionForm")
+        .addEventListener("submit", function (event) {
+          event.preventDefault();
+
+          // Get the form data
+          var formData = {
+            amount: document.getElementById("amount").value,
+            oldbalanceOrg: document.getElementById("oldbalanceOrg").value,
+            newbalanceOrig: document.getElementById("newbalanceOrig").value,
+            oldbalanceDest: document.getElementById("oldbalanceDest").value,
+            newbalanceDest: document.getElementById("newbalanceDest").value,
+            isFlaggedFraud: document.getElementById("isFlaggedFraud").value,
+          };
+          console.log("Data received");
+          // Encrypt the form data
+          var encryptedData = {
+            amount: CryptoJS.AES.encrypt(formData.amount, "secret").toString(),
+            oldbalanceOrg: CryptoJS.AES.encrypt(
+              formData.oldbalanceOrg,
+              "secret"
+            ).toString(),
+            newbalanceOrig: CryptoJS.AES.encrypt(
+              formData.newbalanceOrig,
+              "secret"
+            ).toString(),
+            oldbalanceDest: CryptoJS.AES.encrypt(
+              formData.oldbalanceDest,
+              "secret"
+            ).toString(),
+            newbalanceDest: CryptoJS.AES.encrypt(
+              formData.newbalanceDest,
+              "secret"
+            ).toString(),
+            isFlaggedFraud: CryptoJS.AES.encrypt(
+              formData.isFlaggedFraud,
+              "secret"
+            ).toString(),
+          };
+
+          // Send the encrypted form data to the server via Socket.IO
+          socket.emit("transaction_data", encryptedData);
+        });
+
+      // Listen for the prediction result from the server
+      socket.on("prediction_result", function (data) {
+        var predictionResultDiv = document.getElementById("predictionResult");
+        predictionResultDiv.innerHTML = "<p>" + data.prediction + "</p>";
+      });
+    </script>
+  </body>
+</html>
